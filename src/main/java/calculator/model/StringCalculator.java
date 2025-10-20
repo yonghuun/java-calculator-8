@@ -1,5 +1,7 @@
 package calculator.model;
 
+import java.util.regex.Pattern;
+
 public class StringCalculator {
 
     public int calculate(String text) {
@@ -11,17 +13,29 @@ public class StringCalculator {
         String delimiterRegex = "[,:]";
         String numberText = text;
 
+        // 1. 파싱 로직을 String API로 간결하게
+        if (text.startsWith("//")) {
+            int delimiterEndIndex = text.indexOf("\\n");
+
+            // 커스텀 구분자 추출
+            String customDelimiter = text.substring(2, delimiterEndIndex);
+            delimiterRegex = Pattern.quote(customDelimiter);
+
+            // 숫자 부분 추출
+            numberText = text.substring(delimiterEndIndex + 2);
+        }
+
         String[] numbers = numberText.split(delimiterRegex);
 
-        // 덧셈 로직을 'sum' 메소드로
+        // 2. 덧셈 로직을 'sum' 메소드로 통합
         return sum(numbers);
     }
 
-    // 덧셈, 검증 로직
+    // 덧셈, 검증 로직 통합 (DRY 원칙)
     private int sum(String[] numbers) {
         int sum = 0;
         for (String numberStr : numbers) {
-            
+            // 3. parseToInt 1회 호출로 최적화
             int number = parseToInt(numberStr);
 
             if (number < 0) {
